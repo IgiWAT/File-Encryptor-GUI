@@ -19,6 +19,6 @@ ROW_HEIGHT = 50
 ROWS = 12
 COLOR = "#E9EEF5"
 
-img1 = r"File-Encryptor-GUI\images\icon.png"
-img2 = r"File-Encryptor-GUI\images\padlock.png"
-img3 = r"File-Encryptor-GUI\images\open.png"
+img1 = "images\\icon.png"
+img2 = "images\\padlock.png"
+img3 = "images\\open.png"

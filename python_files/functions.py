@@ -3,11 +3,24 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
 import os
+import sys
 from cryptography.fernet import Fernet
 
 import python_files.global_var as var
 
 # region ====== Funkcje =======
+
+def resource_path(relative_path):
+    """
+    Zwraca poprawną ścieżkę zarówno w trybie skryptu (.py),
+    jak i spakowanego pliku (.exe)
+    """
+    if hasattr(sys, '_MEIPASS'):
+        # PyInstaller rozpakowuje dane do folderu tymczasowego
+        return os.path.join(sys._MEIPASS, relative_path)
+    else:
+        return os.path.join(os.path.abspath("."), relative_path)
+
 
 # Wyswietlenie wskazanej podstrony
 def show_frame(frame):
@@ -130,9 +143,6 @@ def decrypt():
     path1 = var.PATH_1_var.get().strip()
     path2 = var.PATH_2_var.get().strip()
     key = var.ENCRYPTION_KEY.get().strip()
-    print(path1)
-    print(path2)
-    print(key)
 
     if path1 != "":
             if (path2 != "" and key != ""):

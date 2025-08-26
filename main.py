@@ -58,7 +58,7 @@ dec_button = cls.Custom_Button("Decrypt file", frame1, lambda: fc.show_frame(pag
 dec_button.grid(row=1, column=0, sticky="n", pady=30)
 
 #Obraz
-image = Image.open(var.img1)
+image = Image.open(fc.resource_path(var.img1))
 image = image.resize((3*var.COLUMN_WIDTH, 6*var.ROW_HEIGHT))
 image_object = ImageTk.PhotoImage(image)
 
@@ -113,7 +113,7 @@ encryption_btt.grid(column=0, row=8, sticky="sw", padx=30, pady=(30, 0))
 
 
 #---------------- Obraz ----------------
-image2 = Image.open(var.img2)
+image2 = Image.open(fc.resource_path(var.img2))
 image2 = image2.resize((3*var.COLUMN_WIDTH, 6*var.ROW_HEIGHT))
 image_object2 = ImageTk.PhotoImage(image2)
 
@@ -163,7 +163,7 @@ decryption_btt.grid(column=0, row=5, sticky="sw", padx=30, pady=(0, 20))
 
 
 #---------------- Obraz ----------------
-image3 = Image.open(var.img3)
+image3 = Image.open(fc.resource_path(var.img3))
 image3 = image3.resize((3*var.COLUMN_WIDTH, 6*var.ROW_HEIGHT))
 image_object3 = ImageTk.PhotoImage(image3)
 

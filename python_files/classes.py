@@ -14,6 +14,16 @@ class Header(tk.Label):
             bg=var.COLOR
         )
 
+class Gap(tk.Label):
+    def __init__(self, frame, text):
+        super().__init__(
+            frame,
+            text=text.upper(),
+            font=("Helvetica", 14, "bold"),
+            anchor="center",
+            bg="white"
+        )
+
 class Custom_Button(tk.Button):
     def __init__(self, text, box, command):
        super().__init__(
@@ -40,6 +50,15 @@ class Action_Button(Custom_Button):
             font=("Helvetica", 12, "bold"),
             padx=10,
             pady=5
+        )
+
+class Small_Button(Action_Button):
+    def __init__(self, text, box, command):
+        super().__init__(text, box, command)
+        self.config(
+            font=("Helvetica", 9, "bold"),
+            padx=5,
+            pady=2
         )
 
 # Przycisk EXIT oraz cofania się na poprzednia strone

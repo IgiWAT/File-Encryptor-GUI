@@ -5,6 +5,7 @@ from tkinter import messagebox
 import os
 import sys
 from cryptography.fernet import Fernet
+import clipboard
 
 import python_files.global_var as var
 
@@ -46,7 +47,7 @@ def generate_key():
     var.ENCRYPTION_KEY.set(Fernet.generate_key().decode('utf-8'))
     #trzeba zdekodowac klucz bo inaczej bedzie w bajtach
 
-def use_file():
+def save_file():
     if var.ENCRYPTION_KEY.get() != "":
         file_path = filedialog.asksaveasfilename(
             defaultextension=".key",
@@ -57,9 +58,10 @@ def use_file():
         if file_path:  # jeśli użytkownik nie anulował
             with open(file_path, "wb") as f:
                 f.write(var.ENCRYPTION_KEY.get().encode("utf-8"))
-                var.generated_encryption_key_file_path.set(file_path)
+                var.encryption_key_file_path.set(file_path)
         else:
             messagebox.showerror("Error", "Saving cancelled")
+        var.ENCRYPTION_KEY.set("")
     else:
         messagebox.showerror("Error", "First generate key")
 
@@ -71,7 +73,6 @@ def find_extension(path):
 def set_default():
     var.origin_file_path.set("")
     var.encryption_key_file_path.set("")
-    var.generated_encryption_key_file_path.set("")
     var.ENCRYPTION_KEY.set("")
 
 def set_entry(entry):
@@ -97,25 +98,18 @@ def set_entry(entry):
 def encrypt():
     origin_file_path = var.origin_file_path.get().strip()
     encryption_key_file_path = var.encryption_key_file_path.get().strip()
-    generated_encryption_key_file_path = var.generated_encryption_key_file_path.get().strip()
 
     if origin_file_path != "":
-        if encryption_key_file_path != "" or generated_encryption_key_file_path != "":
-            if encryption_key_file_path != "" and  generated_encryption_key_file_path != "":
-                messagebox.showerror("Error", "Choose ONLY ONE way to encrypt file")
-            else:
+        if encryption_key_file_path != "":
+                
                 key = "" 
                 plain_text = ""
                 
                 with open(origin_file_path, 'rb') as origin:
                     plain_text = origin.read()
 
-                if encryption_key_file_path!="": 
-                    with open(encryption_key_file_path, "rb") as keyfile:
-                        key=keyfile.read()
-                else:
-                    with open(generated_encryption_key_file_path, "rb") as keyfile:
-                        key=keyfile.read()
+                with open(encryption_key_file_path, "rb") as keyfile:
+                    key=keyfile.read()
 
                 # Tworzy instancję obiektu Fernet, która bedzie uzywana do szyfrowania i deszyfrowania danych
                 f = Fernet(key)
@@ -135,7 +129,7 @@ def encrypt():
                 else:
                     messagebox.showerror("Error", "Saving cancelled")
 
-        else: messagebox.showerror("Error", "Choose way to encrypt file")
+        else: messagebox.showerror("Error", "Choose file with encryption key")
     else: messagebox.showerror("Error", "Choose file to encrypt")
 
 
@@ -180,5 +174,15 @@ def decrypt():
                     messagebox.showerror("Error", "Saving cancelled")
     else: messagebox.showerror("Error", "Choose file to decrypt")
  
+def cancel_path(option):
+    if option==1:
+        var.origin_file_path.set("")
+    elif option==2:
+        var.encryption_key_file_path.set("")
+    elif option==3:
+        var.ENCRYPTION_KEY.set("")
+    else: pass
 
+def copy_key():
+    clipboard.copy(var.ENCRYPTION_KEY.get().strip())
 #endregion

@@ -12,7 +12,7 @@ import python_files.global_var as var
 
 root = tk.Tk()
 root.title("File Encryptor")
-root.geometry("1000x700")
+root.geometry("1000x800")
 root.configure(bg=var.COLOR)
 
 var.init_variables(root) # Zmienne globalne trzeba zainicjalizowac dopiero po utworzeniu glownego okna
@@ -41,7 +41,7 @@ for box in (page1, page2, page3):
 header1 = cls.Header(page1, "𝖥𝗂𝗅𝖾 𝖤𝗇𝖼𝗋𝗒𝗉𝗍𝗈𝗋")
 header1.pack(pady=10)
 
-frame1 = tk.Frame(page1, bg='white', width=8*var.COLUMN_WIDTH, height=10*var.ROW_HEIGHT)
+frame1 = tk.Frame(page1, bg='white', width=8*var.COLUMN_WIDTH, height=12*var.ROW_HEIGHT)
 frame1.grid_propagate(False)
 frame1.pack(pady=10)
 
@@ -77,7 +77,7 @@ header2 = cls.Header(page2, "​𝐄𝐧𝐜𝐫𝐲𝐩𝐭𝐢𝐨𝐧")
 header2.pack(pady=10)
 
 #====== Bialy kontener ======
-frame2 = tk.Frame(page2, bg='white', width=8*var.COLUMN_WIDTH, height=10*var.ROW_HEIGHT)
+frame2 = tk.Frame(page2, bg='white', width=8*var.COLUMN_WIDTH, height=12*var.ROW_HEIGHT)
 frame2.grid_propagate(False)
 frame2.pack(pady=10)
 
@@ -85,31 +85,48 @@ for i in range(2):
     frame2.columnconfigure(i, weight=1)
 
 choose_file_btt = cls.Action_Button("File to encrypt", frame2, lambda: fc.find_file(1))
-choose_file_label = cls.Path_label(frame2, var.origin_file_path)
+choose_file_label = cls.Key_Label(frame2, var.origin_file_path)
+delete_btt_1 = cls.Small_Button("Cancel file", frame2, lambda: fc.cancel_path(1))
 
 enc_file_btt = cls.Action_Button("Encryption key file", frame2, lambda: fc.find_file(2))
-enc_file_label = cls.Path_label(frame2, var.encryption_key_file_path)
+enc_file_label = cls.Key_Label(frame2, var.encryption_key_file_path)
+delete_btt_2 = cls.Small_Button("Cancel file", frame2, lambda: fc.cancel_path(2))
 
+or_gap = cls.Gap(frame2, text="or")
+#====== Strefa generowania klucza ======
 generate_key_btt = cls.Action_Button("Generate encryption key", frame2, lambda: fc.generate_key())
 key_label = cls.Key_Label(frame2, var.ENCRYPTION_KEY)
-use_btt = cls.Action_Button("Use", frame2, lambda: fc.use_file())
-key_file_label = cls.Path_label(frame2, var.generated_encryption_key_file_path)
+
+frame_three_buttons = tk.Frame(frame2, bg='white')
+for i in range(3):
+    frame_three_buttons.columnconfigure(i, weight=1)
+
+save_btt = cls.Small_Button("Save", frame_three_buttons, lambda: fc.save_file())
+copy_btt = cls.Small_Button("Copy", frame_three_buttons, lambda: fc.copy_key())
+delete_3_btt = cls.Small_Button("Cancel", frame_three_buttons, lambda: fc.cancel_path(3))
 
 encryption_btt = cls.Custom_Button("Encrypt", frame2, lambda: fc.encrypt())
 
 #----------------- Strefa pakowania----------------
 choose_file_btt.grid(column=0, row=0, sticky="nw", pady=(30,5), padx=30)
-choose_file_label.grid(column=0, row=1, sticky="nw", padx=30)
+choose_file_label.grid(column=0, row=1, sticky="nw", pady=(0, 5), padx=30)
+delete_btt_1.grid(column=0, row=2, sticky="nw", pady=(0, 15), padx=30)
 
-enc_file_btt.grid(column=0, row=2, sticky="nw", pady=(30,5), padx=30)
-enc_file_label.grid(column=0, row=3, sticky="nw", padx=30)
+enc_file_btt.grid(column=0, row=3, sticky="nw", pady=(30,5), padx=30)
+enc_file_label.grid(column=0, row=4, sticky="nw", pady=(0,5), padx=30)
+delete_btt_2.grid(column=0, row=5, sticky="nw", padx=30)
 
-generate_key_btt.grid(column=0, row=4, sticky="nw", pady=(30,5), padx=30)
-key_label.grid(column=0, row=5, sticky="nw", padx=30, ipady=3)
-use_btt.grid(column=0, row=6, sticky="w", padx=30, pady=3)
-key_file_label.grid(column=0, row=7, sticky="w", padx=30)
+or_gap.grid(column=0, row=6, sticky="ew", pady=20)
 
-encryption_btt.grid(column=0, row=8, sticky="sw", padx=30, pady=(30, 0))
+generate_key_btt.grid(column=0, row=7, sticky="nw", pady=(0,5), padx=30)
+key_label.grid(column=0, row=8, sticky="nw", padx=30, ipady=3)
+frame_three_buttons.grid(column=0, row=9, sticky="w", padx=30, pady=3)
+
+save_btt.grid(column=0, row=0, sticky="w", padx=(0, 10))
+copy_btt.grid(column=1, row=0, sticky="w", padx=(0, 10))
+delete_3_btt.grid(column=2, row=0, sticky="w")
+
+encryption_btt.grid(column=0, row=10, sticky="sw", padx=30, pady=(40, 0))
 
 
 #---------------- Obraz ----------------
@@ -119,7 +136,7 @@ image_object2 = ImageTk.PhotoImage(image2)
 
 label_img2 = tk.Label(frame2, image=image_object2, bg="white")
 label_img2.image = image_object2
-label_img2.grid(row=0, column=1, rowspan=9, columnspan=1, sticky="nswe")
+label_img2.grid(row=0, column=1, rowspan=10, columnspan=1, sticky="nswe")
 
 #====== BACK ======
 back_button2 = cls.Back_Button("Back", page2, lambda: fc.back(page1))

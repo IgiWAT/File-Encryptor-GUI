@@ -1,16 +1,16 @@
 import tkinter as tk
 
-PATH_1_var = None
-PATH_2_var = None
-PATH_3_var = None
+origin_file_path = None
+encryption_key_file_path = None
+generated_encryption_key_file_path = None
 ENCRYPTION_KEY = None
 
 def init_variables(root):
-    global PATH_1_var, PATH_2_var, PATH_3_var, ENCRYPTION_KEY
+    global origin_file_path, encryption_key_file_path, generated_encryption_key_file_path, ENCRYPTION_KEY
 
-    PATH_1_var = tk.StringVar(root, value="")
-    PATH_2_var = tk.StringVar(root, value="")
-    PATH_3_var = tk.StringVar(root, value="")
+    origin_file_path = tk.StringVar(root, value="")
+    encryption_key_file_path = tk.StringVar(root, value="")
+    generated_encryption_key_file_path = tk.StringVar(root, value="")
     ENCRYPTION_KEY = tk.StringVar(root, value="")
 
 COLUMN_WIDTH = 100

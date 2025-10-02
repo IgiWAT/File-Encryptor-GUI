@@ -85,15 +85,15 @@ for i in range(2):
     frame2.columnconfigure(i, weight=1)
 
 choose_file_btt = cls.Action_Button("File to encrypt", frame2, lambda: fc.find_file(1))
-choose_file_label = cls.Path_label(frame2, var.PATH_1_var)
+choose_file_label = cls.Path_label(frame2, var.origin_file_path)
 
 enc_file_btt = cls.Action_Button("Encryption key file", frame2, lambda: fc.find_file(2))
-enc_file_label = cls.Path_label(frame2, var.PATH_2_var)
+enc_file_label = cls.Path_label(frame2, var.encryption_key_file_path)
 
 generate_key_btt = cls.Action_Button("Generate encryption key", frame2, lambda: fc.generate_key())
 key_label = cls.Key_Label(frame2, var.ENCRYPTION_KEY)
 use_btt = cls.Action_Button("Use", frame2, lambda: fc.use_file())
-key_file_label = cls.Path_label(frame2, var.PATH_3_var)
+key_file_label = cls.Path_label(frame2, var.generated_encryption_key_file_path)
 
 encryption_btt = cls.Custom_Button("Encrypt", frame2, lambda: fc.encrypt())
 
@@ -140,10 +140,10 @@ for i in range(2):
 frame3.rowconfigure(5, weight=1)
 
 choose_file_btt_3 = cls.Action_Button("Encrypted file", frame3, lambda: fc.find_file(1))
-choose_file_label_3 = cls.Path_label(frame3, var.PATH_1_var)
+choose_file_label_3 = cls.Path_label(frame3, var.origin_file_path)
 
 dec_file_btt = cls.Action_Button("Encryption key file", frame3, lambda: fc.find_file(2))
-dec_file_label = cls.Path_label(frame3, var.PATH_2_var)
+dec_file_label = cls.Path_label(frame3, var.encryption_key_file_path)
 
 key_entry = cls.Key_Entry(frame3)
 

@@ -59,8 +59,8 @@ root.configure(bg=COLOR)
 #endregion
 
 # region ====== Funkcje =======
-PATH_1_var = tk.StringVar(value="")
-PATH_2_var = tk.StringVar(value="")
+origin_file_path = tk.StringVar(value="")
+encryption_key_file_path = tk.StringVar(value="")
 
 def show_frame(frame):
     frame.tkraise()
@@ -75,8 +75,8 @@ def find_file(option):
     path = filedialog.askopenfilename(title="Find file to encrypt",
         initialdir=os.getcwd() #otworzy sie w katalagu w ktorym jestesmy
         )
-    if option==1: PATH_1_var.set(path)
-    elif option==2: PATH_2_var.set(path)
+    if option==1: origin_file_path.set(path)
+    elif option==2: encryption_key_file_path.set(path)
 
 def set_placeholder(entry, text):
     entry.insert(0, text)
@@ -96,16 +96,16 @@ def set_placeholder(entry, text):
     entry.bind("<FocusOut>", on_focus_out)
 
 def encrypt(entry):
-    path1 = PATH_1_var.get().strip()
-    path2 = PATH_2_var.get().strip()
+    origin_file_path = origin_file_path.get().strip()
+    encryption_key_file_path = encryption_key_file_path.get().strip()
     entry = entry.get().strip()
 
-    if path1 != "":
-        if path2 != "" or entry != "Type your encryption key":
-            if path2 != "" and  entry != "Type your encryption key":
+    if origin_file_path != "":
+        if encryption_key_file_path != "" or entry != "Type your encryption key":
+            if encryption_key_file_path != "" and  entry != "Type your encryption key":
                 messagebox.showerror("Error", "Choose ONLY ONE way to encrypt file")
             else: 
-                #with open(f"{path1}", 'rb') as plain_file:
+                #with open(f"{origin_file_path}", 'rb') as plain_file:
                 pass
         else: messagebox.showerror("Error", "Choose way to encrypt file")
     else: messagebox.showerror("Error", "Choose file to encrypt")
@@ -193,7 +193,7 @@ for i in range(2):
 
 choose_file_btt = Action_Button("File to encrypt", frame2, lambda: find_file(1))
 choose_file_label = tk.Label(frame2, 
-                             textvariable=PATH_1_var, 
+                             textvariable=origin_file_path, 
                              font=("Helvetica", 10),
                              borderwidth=2,
                              relief="solid",
@@ -205,7 +205,7 @@ key_entry = tk.Entry(frame2, font=("Helvetica", 14), width=30, borderwidth=2,hig
 set_placeholder(key_entry, "Type your encryption key")
 enc_file_btt = Action_Button("Encryption key file", frame2, lambda: find_file(2))
 enc_file_label = tk.Label(frame2, 
-                             textvariable=PATH_2_var, 
+                             textvariable=encryption_key_file_path, 
                              font=("Helvetica", 10),
                              borderwidth=2,
                              relief="solid",

@@ -39,8 +39,8 @@ def find_file(option):
     path = filedialog.askopenfilename(title="Find file to encrypt",
         initialdir=os.getcwd() #otworzy sie w katalagu w ktorym jestesmy
         )
-    if option==1: var.PATH_1_var.set(path)
-    elif option==2: var.PATH_2_var.set(path)
+    if option==1: var.origin_file_path.set(path)
+    elif option==2: var.encryption_key_file_path.set(path)
 
 def generate_key():
     var.ENCRYPTION_KEY.set(Fernet.generate_key().decode('utf-8'))
@@ -57,7 +57,7 @@ def use_file():
         if file_path:  # jeśli użytkownik nie anulował
             with open(file_path, "wb") as f:
                 f.write(var.ENCRYPTION_KEY.get().encode("utf-8"))
-                var.PATH_3_var.set(file_path)
+                var.generated_encryption_key_file_path.set(file_path)
         else:
             messagebox.showerror("Error", "Saving cancelled")
     else:
@@ -69,9 +69,9 @@ def find_extension(path):
     return ext
 
 def set_default():
-    var.PATH_1_var.set("")
-    var.PATH_2_var.set("")
-    var.PATH_3_var.set("")
+    var.origin_file_path.set("")
+    var.encryption_key_file_path.set("")
+    var.generated_encryption_key_file_path.set("")
     var.ENCRYPTION_KEY.set("")
 
 def set_entry(entry):
@@ -95,33 +95,33 @@ def set_entry(entry):
     entry.bind("<FocusOut>", on_focus_out)
 
 def encrypt():
-    path1 = var.PATH_1_var.get().strip()
-    path2 = var.PATH_2_var.get().strip()
-    path3 = var.PATH_3_var.get().strip()
+    origin_file_path = var.origin_file_path.get().strip()
+    encryption_key_file_path = var.encryption_key_file_path.get().strip()
+    generated_encryption_key_file_path = var.generated_encryption_key_file_path.get().strip()
 
-    if path1 != "":
-        if path2 != "" or path3 != "":
-            if path2 != "" and  path3 != "":
+    if origin_file_path != "":
+        if encryption_key_file_path != "" or generated_encryption_key_file_path != "":
+            if encryption_key_file_path != "" and  generated_encryption_key_file_path != "":
                 messagebox.showerror("Error", "Choose ONLY ONE way to encrypt file")
             else:
                 key = "" 
                 plain_text = ""
                 
-                with open(path1, 'rb') as origin:
+                with open(origin_file_path, 'rb') as origin:
                     plain_text = origin.read()
 
-                if path2!="": 
-                    with open(path2, "rb") as keyfile:
+                if encryption_key_file_path!="": 
+                    with open(encryption_key_file_path, "rb") as keyfile:
                         key=keyfile.read()
                 else:
-                    with open(path3, "rb") as keyfile:
+                    with open(generated_encryption_key_file_path, "rb") as keyfile:
                         key=keyfile.read()
 
                 # Tworzy instancję obiektu Fernet, która bedzie uzywana do szyfrowania i deszyfrowania danych
                 f = Fernet(key)
 
                 file_path = filedialog.asksaveasfilename(
-                    defaultextension=find_extension(path1),
+                    defaultextension=find_extension(origin_file_path),
                     title = "Zapisz zaszyfrowany plik"
                 )
 
@@ -140,24 +140,24 @@ def encrypt():
 
 
 def decrypt():
-    path1 = var.PATH_1_var.get().strip()
-    path2 = var.PATH_2_var.get().strip()
+    origin_file_path = var.origin_file_path.get().strip()
+    encryption_key_file_path = var.encryption_key_file_path.get().strip()
     key = var.ENCRYPTION_KEY.get().strip()
 
-    if path1 != "":
-            if (path2 != "" and key != ""):
+    if origin_file_path != "":
+            if (encryption_key_file_path != "" and key != ""):
                 messagebox.showerror("Error", "Choose ONLY ONE way to decrypt file")
-            elif (path2 == "" and key == ""):
+            elif (encryption_key_file_path == "" and key == ""):
                 messagebox.showerror("Error", "You must provide key (file or text)")
             else:
                 key = key.encode("utf-8")
                 ciphered_text = ""
                 
-                with open(path1, 'rb') as origin:
+                with open(origin_file_path, 'rb') as origin:
                     ciphered_text = origin.read()
 
-                if path2 != "":
-                    with open(path2, "rb") as keyfile:
+                if encryption_key_file_path != "":
+                    with open(encryption_key_file_path, "rb") as keyfile:
                         key=keyfile.read()
                 else: pass
 
@@ -165,7 +165,7 @@ def decrypt():
                 f = Fernet(key)
 
                 file_path = filedialog.asksaveasfilename(
-                    defaultextension=find_extension(path1),
+                    defaultextension=find_extension(origin_file_path),
                     title = "Zapisz odszyfrowany plik"
                 )
 

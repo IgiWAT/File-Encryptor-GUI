@@ -53,14 +53,14 @@ for i in range(2):
 enc_button = cls.Custom_Button("Encrypt file", frame1, lambda: fc.show_frame(page2))
 enc_button.grid(row=0, column=0, sticky="s", pady=30)
 
-#Przycisk szyfrowania
+#Przycisk deszyfrowania
 dec_button = cls.Custom_Button("Decrypt file", frame1, lambda: fc.show_frame(page3))
 dec_button.grid(row=1, column=0, sticky="n", pady=30)
 
 #Obraz
-image = Image.open(fc.resource_path(var.img1))
-image = image.resize((3*var.COLUMN_WIDTH, 6*var.ROW_HEIGHT))
-image_object = ImageTk.PhotoImage(image)
+image1 = Image.open(fc.resource_path(var.img1))
+image1 = image1.resize((3*var.COLUMN_WIDTH, 6*var.ROW_HEIGHT))
+image_object = ImageTk.PhotoImage(image1)
 
 label_img = tk.Label(frame1, image=image_object, bg="white")
 label_img.image = image_object

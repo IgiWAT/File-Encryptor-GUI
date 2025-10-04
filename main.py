@@ -173,7 +173,7 @@ for i in range(3):
 
 dec_save_btt = cls.Small_Button("Save", dec_frame_three_buttons, lambda: fc.save_file())
 dec_copy_btt = cls.Small_Button("Copy", dec_frame_three_buttons, lambda: fc.copy_key())
-dec_delete_btt_3 = cls.Small_Button("Cancel", dec_frame_three_buttons, lambda: fc.cancel_path(3))
+dec_delete_btt_3 = cls.Small_Button("Cancel", dec_frame_three_buttons, lambda: fc.cancel_key(key_entry, root))
 
 decryption_btt = cls.Custom_Button("Decrypt", frame3, lambda: fc.decrypt())
 

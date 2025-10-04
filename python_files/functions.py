@@ -119,11 +119,18 @@ def set_entry(entry):
         if entry.get() == "":
             entry.insert(0, placeholder)
             entry.config(fg="grey")
-        else:
+        else: pass
+    
+    def on_release_key(event):
+        if entry.get() != placeholder:
             var.ENCRYPTION_KEY.set(entry.get())
+        else:
+            var.ENCRYPTION_KEY.set("")
+        
 
     entry.bind("<FocusIn>", on_focus_in)
     entry.bind("<FocusOut>", on_focus_out)
+    entry.bind("<KeyRelease>", on_release_key)
 
 def encrypt():
     origin_file_path = var.origin_file_path.get().strip()
@@ -216,6 +223,16 @@ def cancel_path(option):
     elif option==3:
         var.ENCRYPTION_KEY.set("")
     else: pass
+
+def cancel_key(entry, root):
+    var.ENCRYPTION_KEY.set("")
+    entry.delete(0, tk.END)
+
+    placeholder = "Encryption key"
+    entry.insert(0, placeholder)
+    entry.config(fg="grey")
+
+    root.focus_set()
 
 def copy_key():
     clipboard.copy(var.ENCRYPTION_KEY.get().strip())

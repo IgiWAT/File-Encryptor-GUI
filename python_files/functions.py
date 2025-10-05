@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
 import os
+import re
 import sys
 from cryptography.fernet import Fernet
 import clipboard
@@ -32,9 +33,15 @@ def exit(root):
     root.destroy()
 
 # Cofa o jedna strone do tylu
-def back(page): 
+def back_enc_page(page): 
     show_frame(page)
+    page.focus_set()
     set_default()
+
+def back_dec_page(page, entry):
+    back_enc_page(page)
+    entry.delete(0, tk.END)
+    set_initial_entry(entry)
 
 def check_path():
     if var.INITIAL_DIRECTORY.get() =="" or not os.path.isdir(var.INITIAL_DIRECTORY.get()):
@@ -105,7 +112,26 @@ def set_default():
     var.encryption_key_file_path.set("")
     var.ENCRYPTION_KEY.set("")
 
-def set_entry(entry):
+def is_valid_base64_urlsafe(char, len):
+    pattern = r"^[A-Za-z0-9\-_]"
+    if len<44:
+        return bool(re.match(pattern, char))
+    else: 
+        if char == "=": return True
+        else: return False
+
+def set_initial_entry(entry):
+    placeholder = "Encryption key"
+    entry.insert(0, placeholder)
+    entry.config(fg="grey")
+    entry.config(  
+        highlightthickness=0,  # Grubość obramowania
+        highlightbackground="black",  # Zielone obramowanie bez fokusu
+        highlightcolor="green",  # Zielone obramowanie z fokusem
+        relief="solid"
+    )
+
+def set_entry(entry, root):
     placeholder = "Encryption key"
     entry.insert(0, placeholder)
     entry.config(fg="grey")
@@ -122,9 +148,33 @@ def set_entry(entry):
         else: pass
     
     def on_release_key(event):
-        if entry.get() != placeholder:
-            var.ENCRYPTION_KEY.set(entry.get())
+        key = entry.get()
+        length = len(key)
+        if key != placeholder and key!="":
+            if length<=44:
+                if is_valid_base64_urlsafe(key[-1], length):
+                    var.ENCRYPTION_KEY.set(entry.get())
+                    entry.config(  
+                        highlightthickness=2,  # Grubość obramowania
+                        highlightbackground="green",  # Zielone obramowanie bez fokusu
+                        highlightcolor="green",  # Zielone obramowanie z fokusem
+                        relief="flat"
+                    )
+                else:
+                    entry.config(  
+                        highlightthickness=2,  # Grubość obramowania
+                        highlightbackground="red",  # Zielone obramowanie bez fokusu
+                        highlightcolor="red",  # Zielone obramowanie z fokusem
+                        relief="flat"
+                    )
+                    root.focus_set()
+                    messagebox.showerror("Error", "Key must contain only those symbols: \nA-Z\na-z\n0-9\n\\-_")
+            else:
+                #Dodac czerwona ramke
+                messagebox.showerror("Error", "Encryption key must be 44-char long")
         else:
+            set_initial_entry(entry)
+            root.focus_set()
             var.ENCRYPTION_KEY.set("")
         
 
@@ -227,11 +277,7 @@ def cancel_path(option):
 def cancel_key(entry, root):
     var.ENCRYPTION_KEY.set("")
     entry.delete(0, tk.END)
-
-    placeholder = "Encryption key"
-    entry.insert(0, placeholder)
-    entry.config(fg="grey")
-
+    set_initial_entry(entry)
     root.focus_set()
 
 def copy_key():

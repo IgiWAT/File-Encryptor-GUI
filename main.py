@@ -139,7 +139,7 @@ label_img2.image = image_object2
 label_img2.grid(row=0, column=1, rowspan=10, columnspan=1, sticky="nswe")
 
 #====== BACK ======
-back_button2 = cls.Back_Button("Back", page2, lambda: fc.back(page1))
+back_button2 = cls.Back_Button("Back", page2, lambda: fc.back_enc_page(page1))
 back_button2.pack(pady=15)
 #endregion
 
@@ -189,7 +189,7 @@ dec_delete_btt_2.grid(column=0, row=5, sticky="nw", padx=30)
 dec_or_gap.grid(column=0, row=6, sticky="ew", pady=20)
 
 key_entry.grid(column=0, row=7, sticky="nw", pady=(0,5), padx=30, ipadx=5, ipady=3)
-fc.set_entry(key_entry)
+fc.set_entry(key_entry, frame3)
 
 dec_frame_three_buttons.grid(column=0, row=8, sticky="w", padx=30, pady=3)
 dec_save_btt.grid(column=0, row=0, sticky="w", padx=(0, 10))
@@ -209,7 +209,7 @@ label_img3.image = image_object3
 label_img3.grid(row=0, column=1, rowspan=9, columnspan=1, sticky="nswe")
 
 #====== BACK ======
-back_button3 = cls.Back_Button("Back", page3, lambda: fc.back(page1))
+back_button3 = cls.Back_Button("Back", page3, lambda: fc.back_dec_page(page1, key_entry))
 back_button3.pack(pady=15)
 #endregion
 

@@ -1,4 +1,5 @@
 import tkinter as tk
+import os
 
 origin_file_path = None
 encryption_key_file_path = None
@@ -19,6 +20,6 @@ ROW_HEIGHT = 50
 ROWS = 12
 COLOR = "#E9EEF5"
 
-img1 = "images\\icon.png"
-img2 = "images\\padlock.png"
-img3 = "images\\open.png"
+img1 = os.path.join(*["images", "icon.png"]) # * -rozpakowywuje liste na oddzielne argumenty
+img2 = os.path.join(*["images", "padlock.png"])
+img3 = os.path.join(*["images", "open.png"])

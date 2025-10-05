@@ -131,6 +131,22 @@ def set_initial_entry(entry):
         relief="solid"
     )
 
+def set_entry_red(entry):
+    entry.config(  
+        highlightthickness=2,  # Grubość obramowania
+        highlightbackground="red",  # Zielone obramowanie bez fokusu
+        highlightcolor="red",  # Zielone obramowanie z fokusem
+        relief="flat"
+    )
+
+def set_entry_green(entry):
+    entry.config(  
+        highlightthickness=2,  # Grubość obramowania
+        highlightbackground="green",  # Zielone obramowanie bez fokusu
+        highlightcolor="green",  # Zielone obramowanie z fokusem
+        relief="flat"
+    )
+    
 def set_entry(entry, root):
     placeholder = "Encryption key"
     entry.insert(0, placeholder)
@@ -154,24 +170,15 @@ def set_entry(entry, root):
             if length<=44:
                 if is_valid_base64_urlsafe(key[-1], length):
                     var.ENCRYPTION_KEY.set(entry.get())
-                    entry.config(  
-                        highlightthickness=2,  # Grubość obramowania
-                        highlightbackground="green",  # Zielone obramowanie bez fokusu
-                        highlightcolor="green",  # Zielone obramowanie z fokusem
-                        relief="flat"
-                    )
+                    set_entry_green(entry)
                 else:
-                    entry.config(  
-                        highlightthickness=2,  # Grubość obramowania
-                        highlightbackground="red",  # Zielone obramowanie bez fokusu
-                        highlightcolor="red",  # Zielone obramowanie z fokusem
-                        relief="flat"
-                    )
+                    set_entry_red(entry)
                     root.focus_set()
                     messagebox.showerror("Error", "Key must contain only those symbols: \nA-Z\na-z\n0-9\n\\-_")
             else:
                 #Dodac czerwona ramke
-                messagebox.showerror("Error", "Encryption key must be 44-char long")
+                messagebox.showerror("Error", f"Encryption key must be 44-char long. \nRemove {length-44} chars")
+                root.focus_set()
         else:
             set_initial_entry(entry)
             root.focus_set()

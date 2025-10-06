@@ -161,7 +161,7 @@ dec_delete_btt_1 = cls.Small_Button("Cancel file", frame3, lambda: fc.cancel_pat
 
 dec_file_btt = cls.Action_Button("Encryption key file", frame3, lambda: fc.find_file(2))
 dec_file_label = cls.Key_Label(frame3, var.encryption_key_file_path)
-dec_delete_btt_2 = cls.Small_Button("Cancel file", frame3, lambda: fc.cancel_path(2))
+dec_delete_btt_2 = cls.Small_Button(    "Cancel file", frame3, lambda: fc.cancel_path(2))
 
 dec_or_gap = cls.Gap(frame3, text="or")
 
@@ -175,7 +175,7 @@ dec_save_btt = cls.Small_Button("Save", dec_frame_three_buttons, lambda: fc.save
 dec_copy_btt = cls.Small_Button("Copy", dec_frame_three_buttons, lambda: fc.copy_key())
 dec_delete_btt_3 = cls.Small_Button("Cancel", dec_frame_three_buttons, lambda: fc.cancel_key(key_entry, root))
 
-decryption_btt = cls.Custom_Button("Decrypt", frame3, lambda: fc.decrypt())
+decryption_btt = cls.Custom_Button("Decrypt", frame3, lambda: fc.decrypt(key_entry))
 
 #----------------- Strefa pakowania----------------
 dec_choose_file_btt.grid(column=0, row=0, sticky="nw", pady=(30,5), padx=30)
@@ -189,7 +189,7 @@ dec_delete_btt_2.grid(column=0, row=5, sticky="nw", padx=30)
 dec_or_gap.grid(column=0, row=6, sticky="ew", pady=20)
 
 key_entry.grid(column=0, row=7, sticky="nw", pady=(0,5), padx=30, ipadx=5, ipady=3)
-fc.set_entry(key_entry, frame3)
+fc.set_entry(key_entry, root)
 
 dec_frame_three_buttons.grid(column=0, row=8, sticky="w", padx=30, pady=3)
 dec_save_btt.grid(column=0, row=0, sticky="w", padx=(0, 10))

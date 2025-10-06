@@ -42,6 +42,7 @@ def back_dec_page(page, entry):
     back_enc_page(page)
     entry.delete(0, tk.END)
     set_initial_entry(entry)
+    page.focus_set()
 
 def check_path():
     if var.INITIAL_DIRECTORY.get() =="" or not os.path.isdir(var.INITIAL_DIRECTORY.get()):
@@ -112,24 +113,19 @@ def set_default():
     var.encryption_key_file_path.set("")
     var.ENCRYPTION_KEY.set("")
 
-def is_valid_base64_urlsafe(char, len):
-    pattern = r"^[A-Za-z0-9\-_]"
-    if len<44:
-        return bool(re.match(pattern, char))
-    else: 
-        if char == "=": return True
-        else: return False
 
 def set_initial_entry(entry):
+    entry.delete(0, tk.END)
     placeholder = "Encryption key"
     entry.insert(0, placeholder)
-    entry.config(fg="grey")
     entry.config(  
-        highlightthickness=0,  # Grubość obramowania
-        highlightbackground="black",  # Zielone obramowanie bez fokusu
-        highlightcolor="green",  # Zielone obramowanie z fokusem
+        fg = "grey",
+        highlightthickness=0,
+        highlightbackground="black",
+        highlightcolor="black",
         relief="solid"
     )
+    entry.update_idletasks()
 
 def set_entry_red(entry):
     entry.config(  
@@ -151,43 +147,66 @@ def set_entry(entry, root):
     placeholder = "Encryption key"
     entry.insert(0, placeholder)
     entry.config(fg="grey")
+    
+    def is_valid_base64_urlsafe_2(P, s):
+    # !!! funkcja wywołuje się tylko jednorazowo
+        allowed_chars = set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=-_")
+        # P - cala wartosc pola,   s - poprzednia wartosc pola
+        if P == "":
+            if s==placeholder or s=="":
+                entry.config(fg="black")
+                return True
+            else:
+                root.focus_set()
+                s = ""
+                set_initial_entry(entry)
+                var.ENCRYPTION_KEY.set("")
+                return True
+        elif len(P) <= 44 and all(char in allowed_chars for char in P):
+            entry.config(fg="black")  # Czarny tekst dla poprawnych znaków
+            var.ENCRYPTION_KEY.set(P)
+            set_entry_green(entry)  # Zielone obramowanie
+            return True
+        else:
+            set_entry_red(entry)
+            return False
+    
+    reg = root.register(is_valid_base64_urlsafe_2)
+    
+    entry.config(
+        bg="white",
+        highlightthickness=2,
+        highlightbackground="black",
+        highlightcolor="black",
+        borderwidth=2,
+        relief="flat",
+        validate="key",
+        validatecommand=(reg, '%P', '%s')
+    )
 
     def on_focus_in(event):
-         if entry.get() == placeholder:
+        if entry.get() == placeholder:
             entry.delete(0, tk.END)
-            entry.config(fg="black")
+            entry.config(fg="black")  # Czarny tekst po kliknięciu
 
     def on_focus_out(event):
         if entry.get() == "":
-            entry.insert(0, placeholder)
-            entry.config(fg="grey")
-        else: pass
-    
-    def on_release_key(event):
+            set_initial_entry(entry)
+            var.ENCRYPTION_KEY.set("")
+
+    def on_key_release(event):
         key = entry.get()
-        length = len(key)
-        if key != placeholder and key!="":
-            if length<=44:
-                if is_valid_base64_urlsafe(key[-1], length):
-                    var.ENCRYPTION_KEY.set(entry.get())
-                    set_entry_green(entry)
-                else:
-                    set_entry_red(entry)
-                    root.focus_set()
-                    messagebox.showerror("Error", "Key must contain only those symbols: \nA-Z\na-z\n0-9\n\\-_")
-            else:
-                #Dodac czerwona ramke
-                messagebox.showerror("Error", f"Encryption key must be 44-char long. \nRemove {length-44} chars")
-                root.focus_set()
+        if key != placeholder and key != "":
+            var.ENCRYPTION_KEY.set(key)
+            set_entry_green(entry)
         else:
             set_initial_entry(entry)
-            root.focus_set()
             var.ENCRYPTION_KEY.set("")
-        
+            root.focus_set()
 
     entry.bind("<FocusIn>", on_focus_in)
     entry.bind("<FocusOut>", on_focus_out)
-    entry.bind("<KeyRelease>", on_release_key)
+    entry.bind("<KeyRelease>", on_key_release)
 
 def encrypt():
     origin_file_path = var.origin_file_path.get().strip()
@@ -231,7 +250,7 @@ def encrypt():
     else: messagebox.showerror("Error", "Choose file to encrypt")
 
 
-def decrypt():
+def decrypt(entry):
     origin_file_path = var.origin_file_path.get().strip()
     encryption_key_file_path = var.encryption_key_file_path.get().strip()
     key = var.ENCRYPTION_KEY.get().strip()
@@ -267,6 +286,7 @@ def decrypt():
                         dec_file.write(decrypted)
                         messagebox.showinfo("Good job", "File has been sucessfully decrypted")
 
+                        set_initial_entry(entry)
                         set_default()
                 else:
                     messagebox.showerror("Error", "Saving cancelled")

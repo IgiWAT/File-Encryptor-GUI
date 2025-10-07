@@ -40,7 +40,6 @@ def back_enc_page(page):
 
 def back_dec_page(page, entry):
     back_enc_page(page)
-    entry.delete(0, tk.END)
     set_initial_entry(entry)
     page.focus_set()
 
@@ -125,7 +124,8 @@ def set_initial_entry(entry):
         highlightcolor="black",
         relief="solid"
     )
-    entry.update_idletasks()
+    #entry.update_idletasks()
+    #entry.event_generate('<Key>')
 
 def set_entry_red(entry):
     entry.config(  
@@ -145,8 +145,8 @@ def set_entry_green(entry):
     
 def set_entry(entry, root):
     placeholder = "Encryption key"
-    entry.insert(0, placeholder)
-    entry.config(fg="grey")
+    #entry.insert(0, placeholder)
+    #entry.config(fg="grey")
     
     def is_valid_base64_urlsafe_2(P, s):
     # !!! funkcja wywołuje się tylko jednorazowo
@@ -170,8 +170,8 @@ def set_entry(entry, root):
         else:
             set_entry_red(entry)
             return False
-    
-    reg = root.register(is_valid_base64_urlsafe_2)
+        
+    reg = root.register(is_valid_base64_urlsafe_2)    
     
     entry.config(
         bg="white",
@@ -303,7 +303,6 @@ def cancel_path(option):
 
 def cancel_key(entry, root):
     var.ENCRYPTION_KEY.set("")
-    entry.delete(0, tk.END)
     set_initial_entry(entry)
     root.focus_set()
 

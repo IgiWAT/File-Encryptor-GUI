@@ -189,6 +189,7 @@ dec_delete_btt_2.grid(column=0, row=5, sticky="nw", padx=30)
 dec_or_gap.grid(column=0, row=6, sticky="ew", pady=20)
 
 key_entry.grid(column=0, row=7, sticky="nw", pady=(0,5), padx=30, ipadx=5, ipady=3)
+fc.set_initial_entry(key_entry)
 fc.set_entry(key_entry, root)
 
 dec_frame_three_buttons.grid(column=0, row=8, sticky="w", padx=30, pady=3)

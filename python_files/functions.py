@@ -10,6 +10,9 @@ import clipboard
 
 import python_files.global_var as var
 
+placeholder = "Encryption key"
+
+
 # region ====== Funkcje =======
 
 def resource_path(relative_path):
@@ -117,6 +120,7 @@ def set_initial_entry(entry):
     entry.delete(0, tk.END)
     placeholder = "Encryption key"
     entry.insert(0, placeholder)
+    var.ENCRYPTION_KEY.set("")
     entry.config(  
         fg = "grey",
         highlightthickness=0,
@@ -124,8 +128,6 @@ def set_initial_entry(entry):
         highlightcolor="black",
         relief="solid"
     )
-    #entry.update_idletasks()
-    #entry.event_generate('<Key>')
 
 def set_entry_red(entry):
     entry.config(  
@@ -142,47 +144,8 @@ def set_entry_green(entry):
         highlightcolor="green",  # Zielone obramowanie z fokusem
         relief="flat"
     )
-    
+
 def set_entry(entry, root):
-    placeholder = "Encryption key"
-    #entry.insert(0, placeholder)
-    #entry.config(fg="grey")
-    
-    def is_valid_base64_urlsafe_2(P, s):
-    # !!! funkcja wywołuje się tylko jednorazowo
-        allowed_chars = set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=-_")
-        # P - cala wartosc pola,   s - poprzednia wartosc pola
-        if P == "":
-            if s==placeholder or s=="":
-                entry.config(fg="black")
-                return True
-            else:
-                root.focus_set()
-                s = ""
-                set_initial_entry(entry)
-                var.ENCRYPTION_KEY.set("")
-                return True
-        elif len(P) <= 44 and all(char in allowed_chars for char in P):
-            entry.config(fg="black")  # Czarny tekst dla poprawnych znaków
-            var.ENCRYPTION_KEY.set(P)
-            set_entry_green(entry)  # Zielone obramowanie
-            return True
-        else:
-            set_entry_red(entry)
-            return False
-        
-    reg = root.register(is_valid_base64_urlsafe_2)    
-    
-    entry.config(
-        bg="white",
-        highlightthickness=2,
-        highlightbackground="black",
-        highlightcolor="black",
-        borderwidth=2,
-        relief="flat",
-        validate="key",
-        validatecommand=(reg, '%P', '%s')
-    )
 
     def on_focus_in(event):
         if entry.get() == placeholder:
@@ -196,9 +159,14 @@ def set_entry(entry, root):
 
     def on_key_release(event):
         key = entry.get()
+        length = len(key)
         if key != placeholder and key != "":
-            var.ENCRYPTION_KEY.set(key)
-            set_entry_green(entry)
+            if length>44:
+                set_entry_red(entry)
+                messagebox.showwarning("Key error", f"Key must be 44-char long. Remove {length-44} chars")
+            else:
+                var.ENCRYPTION_KEY.set(key)
+                set_entry_green(entry)
         else:
             set_initial_entry(entry)
             var.ENCRYPTION_KEY.set("")
@@ -207,6 +175,38 @@ def set_entry(entry, root):
     entry.bind("<FocusIn>", on_focus_in)
     entry.bind("<FocusOut>", on_focus_out)
     entry.bind("<KeyRelease>", on_key_release)
+
+def check_is_key_is_valid(key):
+    chars_to_remove = []
+    allowed_chars = set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_")
+    length = len(key)
+    if length==44: 
+        if key[-1]=="=":
+            valid = True
+            for i in range(length-1):
+                char = key[i]
+                if not (char in allowed_chars):
+                    chars_to_remove.append(char)
+                    valid = False
+                else: pass   
+
+            if valid==True:
+                return True
+            else:
+                messagebox.showwarning("Key error", f"Remove {" ".join(chars_to_remove)} and any whitespaces \n\nMake sure to type only allowed chars: \nA-Z\na-z\n0-9\n\"-\" \"_\"")      
+                return False
+        else: 
+            messagebox.showwarning("Key error", f"Last char in the key must be \"=\"")
+            return False
+    else:       
+        show_length_warning(length)
+        return False
+
+def show_length_warning(length):
+    if length<44:
+        messagebox.showwarning("Key error", f"Key must be 44-char long. Add {44-length} chars")
+    else:
+        messagebox.showwarning("Key error", f"Key must be 44-char long. Remove {length-44} chars")
 
 def encrypt():
     origin_file_path = var.origin_file_path.get().strip()
@@ -245,51 +245,70 @@ def encrypt():
                         messagebox.showerror("Error", "Saving cancelled")
 
                 else: messagebox.showerror("Error", "Check if \"Encryption key file\" still available on the computer")
-            else: messagebox.showerror("Error", "Choose file with encryption key")
+            else: messagebox.showerror("Error", "Choose file with encryption key or \nSave generated key first")
         else: messagebox.showerror("Error", "Check if \"File to encrypt\" still available on the computer")
     else: messagebox.showerror("Error", "Choose file to encrypt")
 
+def chech_file_for_one_key(key_path):
+    with open(key_path, "r") as file:
+        lines = file.readlines()
+        
+        if len(lines) == 1: return True
+        else: return False
 
-def decrypt(entry):
+def decrypt(entry, root):
     origin_file_path = var.origin_file_path.get().strip()
     encryption_key_file_path = var.encryption_key_file_path.get().strip()
     key = var.ENCRYPTION_KEY.get().strip()
+    validated = False
 
     if origin_file_path != "":
             if (encryption_key_file_path != "" and key != ""):
                 messagebox.showerror("Error", "Choose ONLY ONE way to decrypt file")
             elif (encryption_key_file_path == "" and key == ""):
-                messagebox.showerror("Error", "You must provide key (file or text)")
+                messagebox.showerror("Error", "You must provide only ONE key (file or text)")
             else:
-                key = key.encode("utf-8")
-                ciphered_text = ""
-                
-                with open(origin_file_path, 'rb') as origin:
-                    ciphered_text = origin.read()
-
                 if encryption_key_file_path != "":
-                    with open(encryption_key_file_path, "rb") as keyfile:
-                        key=keyfile.read()
-                else: pass
-
-                # Tworzy instancję obiektu Fernet, która bedzie uzywana do szyfrowania i deszyfrowania danych
-                f = Fernet(key)
-
-                file_path = filedialog.asksaveasfilename(
-                    defaultextension=find_extension(origin_file_path),
-                    title = "Zapisz odszyfrowany plik"
-                )
-
-                if file_path:
-                    with open(file_path, "wb") as dec_file:
-                        decrypted = f.decrypt(ciphered_text)
-                        dec_file.write(decrypted)
-                        messagebox.showinfo("Good job", "File has been sucessfully decrypted")
-
-                        set_initial_entry(entry)
-                        set_default()
+                    if chech_file_for_one_key(encryption_key_file_path):
+                        with open(encryption_key_file_path, "rb") as keyfile:
+                            key=keyfile.readline()
+                            if check_is_key_is_valid(key.decode('utf-8')):
+                                validated =True
+                            else: return
+                    else:
+                        messagebox.showwarning("Encryption key file error", "File should contain one encryption key and no additional text")
+                        return
                 else:
-                    messagebox.showerror("Error", "Saving cancelled")
+                    if check_is_key_is_valid(key):
+                        validated =True
+                        key = key.encode("utf-8")
+                    else: return
+                        
+                if validated==True:
+                    ciphered_text = ""
+                    
+                    with open(origin_file_path, 'rb') as origin:
+                        ciphered_text = origin.read()
+
+                    # Tworzy instancję obiektu Fernet, która bedzie uzywana do szyfrowania i deszyfrowania danych
+                    f = Fernet(key)
+
+                    file_path = filedialog.asksaveasfilename(
+                        defaultextension=find_extension(origin_file_path),
+                        title = "Zapisz odszyfrowany plik"
+                    )
+
+                    if file_path:
+                        with open(file_path, "wb") as dec_file:
+                            decrypted = f.decrypt(ciphered_text)
+                            dec_file.write(decrypted)
+                            messagebox.showinfo("Good job", "File has been sucessfully decrypted")
+
+                            set_initial_entry(entry)
+                            set_default()
+                            root.focus_set()
+                    else: messagebox.showerror("Error", "Saving cancelled")
+                else: messagebox.showwarning("Validation Error", "Invalid encryption key")
     else: messagebox.showerror("Error", "Choose file to decrypt")
  
 def cancel_path(option):
